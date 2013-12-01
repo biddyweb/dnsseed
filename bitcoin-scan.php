@@ -23,7 +23,7 @@ try {
         if (!empty($nodes)) {
 		start_db_transaction();
 
-		add_node_to_dns($arr[0], $port, $origNode->getVersion());
+		add_node_to_dns($arr[0], $port, $origNode->getVersion(), $origNode->getSubversion());
 
 		foreach ($nodes as &$node) {
 			if ($node["services1"] == 1 && $node["services2"] == 0 && $node["timestamp"] >= time() - $CONFIG['MIN_LAST_SEEN'])

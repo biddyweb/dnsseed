@@ -1,5 +1,4 @@
 #!/usr/bin/php
-
 <?php
 require("config.php");
 require("global.php");

@@ -19,7 +19,9 @@ $CONFIG['DOMAIN_NAME']			 = "dnsseed.litecoin.bit";
 $CONFIG['RECORD_TTL']			 = "60";
 
 // The minimum version to be added to the DNS database
-$CONFIG['MIN_VERSION']			 = 50000; // 0.5.0
+$CONFIG['MIN_VERSION']			 = 70002;
+// List of subversions to be added to the DNS database
+$CONFIG['SUBVERSIONS']			 = "('/Satoshi:0.8.5.1/', '/Satoshi:0.8.5.2/', '/Satoshi:0.8.5.3/', '/Satoshi:0.8.6.1/')";
 // Timeout to connect to nodes
 $CONFIG['CONNECT_TIMEOUT']		 = 2;
 // Rate at which nodes which do not accept incoming connections are rechecked (seconds)

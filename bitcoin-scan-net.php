@@ -1,9 +1,12 @@
 #!/usr/bin/php
-
 <?php
 
 require("config.php");
 require("global.php");
+
+function sratio($n, $d) {
+	return sprintf('%d/%d (%.2f%%)', $n, $d, 100*$n/$d);
+}
 
 try {
 	connect_to_db();
@@ -17,14 +20,14 @@ try {
 			$length = get_count_of_results($result);
 			$i = 0;
 			if ($i % $time == 0 && $length != 0)
-				echo $i."/".$length." (".$i*100/$length."%) (1st of 3 rounds)\n";
+				echo "Round 1/3: ".sratio($i, $length)."\n";
 			$row = get_assoc_result_row($result);
 			while (!empty($row)) {
 				scan_node($row['ipv4'], $row['port']);
 				usleep($CONFIG['SLEEP_BETWEEN_CONNECT']);
 				$i++;
 				if ($i % $time == 0)
-					echo $i."/".$length." (".$i*100/$length."%) (1st of 3 rounds)\n";
+					echo "Round 1/3: ".sratio($i, $length)."\n";
 				$row = get_assoc_result_row($result);
 			}
 		}
@@ -37,14 +40,14 @@ try {
 			$length = get_count_of_results($result);
 			$i = 0;
 			if ($i % $time == 0 && $length != 0)
-				echo $i."/".$length." (".$i*100/$length."%) (2nd of 3 rounds)\n";
+				echo "Round 2/3: ".sratio($i, $length)."\n";
 			$row = get_assoc_result_row($result);
 			while (!empty($row)) {
 				scan_node($row['ipv4'], $row['port']);
 				usleep($CONFIG['SLEEP_BETWEEN_CONNECT']);
 				$i++;
 				if ($i % $time == 0)
-					echo $i."/".$length." (".$i*100/$length."%) (2nd of 3 rounds)\n";
+					echo "Round 2/3: ".sratio($i, $length)."\n";
 				$row = get_assoc_result_row($result);
 			}
 		}
@@ -58,14 +61,14 @@ try {
 			$length = get_count_of_results($result);
 			$i = 0;
 			if ($i % $time == 0 && $length != 0)
-				echo $i."/".$length." (".$i*100/$length."%) (3rd of 3 rounds)\n";
+				echo "Round 3/3: ".sratio($i, $length)."\n";
 			$row = get_assoc_result_row($result);
 			while (!empty($row)) {
 				scan_node($row['ipv4'], $row['port']);
 				usleep($CONFIG['SLEEP_BETWEEN_CONNECT']);
 				$i++;
 				if ($i % $time == 0)
-					echo $i."/".$length." (".$i*100/$length."%) (3rd of 3 rounds)\n";
+					echo "Round 3/3: ".sratio($i, $length)."\n";
 				$row = get_assoc_result_row($result);
 			}
 		}

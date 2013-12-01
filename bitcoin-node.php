@@ -80,6 +80,10 @@ class Node {
 		return $this->version;
 	}
 
+	public function getSubversion() {
+		return $this->subversion;
+	}
+
 	public function getVersionStr() {
 		$v = $this->version;
 		if ($v > 10000) {
@@ -101,10 +105,14 @@ class Node {
 	}
 
 	protected function _decodeVersionPayload($data) {
-		$data = unpack('Vversion/V2nServices/V2timestamp', $data);
+		$ar = unpack('Vversion/V2nServices/V2timestamp/C26addr_recv/C26addr_from/V2nonce/CnAgent', $data);
 
-		$this->version = $data['version'];
+		$this->version = $ar['version'];
 		if ($this->version == 10300) $this->version = 300;
+
+		$this->subversion = substr($data, 81, $ar['nAgent']);
+		$ar2 = unpack('Vstart_height', substr($data, 81 + $ar['nAgent']));
+		$this->start_height = $ar2['start_height'];
 
 		// send verack?
 		if ($this->version >= 209)

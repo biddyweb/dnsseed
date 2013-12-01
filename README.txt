@@ -44,7 +44,7 @@ Running
 
 To bootstrap call php bitcoin-scan.php (the ip of a known-good node)
 ie
-php bitcoin-scan.php `dig +short litecoinpool.org`
+php bitcoin-scan.php `dig +short block-explorer.com`
 warning: this node will end up in the database, so call a node by its public ip
 followed by repeated calls to php bitcoin-scan-net.php which will fill the dbs
 quite quickly.

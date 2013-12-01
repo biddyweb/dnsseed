@@ -141,6 +141,7 @@ function connect_to_db() {
 			last_check INT DEFAULT NULL,
 			accepts_incoming INT NOT NULL DEFAULT 0,
 			version INT DEFAULT NULL,
+			subversion CHARACTER VARYING DEFAULT NULL,
 			last_seen INT NOT NULL,
 			first_up INT DEFAULT NULL,
 			PRIMARY KEY (ipv4,port)
@@ -177,19 +178,20 @@ function commit_db_transaction() {
 	$transaction_open = false;
 }
 
-function add_node_to_dns($ip, $port, $version) {
+function add_node_to_dns($ip, $port, $version, $subversion) {
 	global $db, $CONFIG;
 	if (empty($db))
 		connect_to_db();
 
 	if (!empty($ip) && ip2long($ip) != 0 && !empty($port) && is_numeric($port) && $port != 0 && is_numeric($version) && $version > 0) {
 		@$db->exec("INSERT INTO nodes "
-			."(ipv4, port, accepts_incoming, last_check, version, last_seen, first_up) VALUES "
-			."(" . ip2long($ip) . ", " . $port . ", 1, ".time().", " . $version . ",".time().", ".time().");");
+			."(ipv4, port, accepts_incoming, last_check, version, subversion, last_seen, first_up) VALUES "
+			."(" . ip2long($ip) . ", " . $port . ", 1, ".time().", " . $version . ",'" . SQLite3::escapeString($subversion) . "',".time().", ".time().");");
 		$db->exec("UPDATE nodes SET "
 			."accepts_incoming = 1, "
 			."last_check = ".time().", "
 			."version = " . $version . ", "
+			."subversion = '" . SQLite3::escapeString($subversion) . "', "
 			."last_seen = ".time().", "
 			."first_up = CASE WHEN first_up > 0 THEN first_up ELSE ".time()." END "
 			."WHERE ipv4 = " . ip2long($ip) . " AND port = " . $port . ";");
@@ -280,18 +282,18 @@ function prune_nodes() {
 // Functions used only by fill-dns.php
 function get_list_of_nodes_for_dns() {
 	global $db, $CONFIG;
-	return $db->query("SELECT ipv4 FROM nodes WHERE accepts_incoming = 1 AND port = 9333 AND version >= ".$CONFIG['MIN_VERSION']." ORDER BY last_check DESC LIMIT 20;");
+	return $db->query("SELECT ipv4 FROM nodes WHERE accepts_incoming = 1 AND port = 9333 AND version >= ".$CONFIG['MIN_VERSION']." AND subversion IN ".$CONFIG['SUBVERSIONS']." ORDER BY last_check DESC LIMIT 20;");
 }
 
 // Functions used only by count-nodes.php
 function query_version_count() {
 	global $db, $CONFIG;
-	return $db->query("SELECT COUNT(*), version FROM nodes WHERE accepts_incoming = 1 AND port = 9333 GROUP BY version ORDER BY version;");
+	return $db->query("SELECT COUNT(*), subversion AS version FROM nodes WHERE accepts_incoming = 1 AND port = 9333 GROUP BY subversion ORDER BY subversion;");
 }
 
 function query_dns_total() {
 	global $db, $CONFIG;
-	return $db->query("SELECT COUNT(*) FROM nodes WHERE accepts_incoming = 1 AND port = 9333 AND version >= ".$CONFIG['MIN_VERSION'].";");
+	return $db->query("SELECT COUNT(*) FROM nodes WHERE accepts_incoming = 1 AND port = 9333 AND version >= ".$CONFIG['MIN_VERSION']." AND subversion IN ".$CONFIG['SUBVERSIONS'].";");
 }
 
 function query_total() {
